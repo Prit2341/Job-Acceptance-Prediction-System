@@ -8,17 +8,6 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
 
 
-def load_data(filepath):
-    """
-    Load dataset from CSV file
-    
-    Args:
-        filepath (str): Path to the CSV file
-        
-    Returns:
-        pd.DataFrame: Loaded dataset
-    """
-    return pd.read_csv(filepath)
 
 
 def data_quality_check(df):
