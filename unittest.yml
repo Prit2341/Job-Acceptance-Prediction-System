@@ -10,17 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        python-version: 
-    
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
     
     - name: Install dependencies
       run: |
@@ -48,7 +42,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v3
       with:
-        name: test-results-${{ matrix.python-version }}
+        name: test-results
         path: |
           test_report.html
           htmlcov/
@@ -61,8 +55,6 @@ jobs:
     
     - name: Set up Python
       uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
     
     - name: Install dependencies
       run: |
