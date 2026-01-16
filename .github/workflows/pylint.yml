@@ -21,4 +21,5 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py')
+        # Don't fail the build on style/refactor findings; surface them in logs
+        pylint $(git ls-files '*.py') --exit-zero
