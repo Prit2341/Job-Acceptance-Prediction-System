@@ -17,9 +17,9 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 echo 'Setting up Python virtual environment...'
-                bat '''
-                    python -m venv %VENV_DIR%
-                    call %VENV_DIR%\\Scripts\\activate.bat
+                sh '''
+                    python3 -m venv $VENV_DIR
+                    . $VENV_DIR/bin/activate
                     python -m pip install --upgrade pip
                 '''
             }
@@ -28,8 +28,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing required packages...'
-                bat '''
-                    call %VENV_DIR%\\Scripts\\activate.bat
+                sh '''
+                    . $VENV_DIR/bin/activate
                     pip install -r requirements.txt
                 '''
             }
@@ -38,9 +38,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Running unit tests...'
-                bat '''
-                    call %VENV_DIR%\\Scripts\\activate.bat
-                    pytest src/ --junitxml=test-results.xml || exit 0
+                sh '''
+                    . $VENV_DIR/bin/activate
+                    pytest src/ --junitxml=test-results.xml || true
                 '''
             }
         }
@@ -48,8 +48,8 @@ pipeline {
         stage('Train Model') {
             steps {
                 echo 'Training ML models...'
-                bat '''
-                    call %VENV_DIR%\\Scripts\\activate.bat
+                sh '''
+                    . $VENV_DIR/bin/activate
                     python train.py
                 '''
             }
