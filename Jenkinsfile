@@ -1,14 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.9'
-            args '-u root:root'
-        }
-    }
-    
-    environment {
-        VENV_DIR = 'venv'
-    }
+    agent any
     
     stages {
         stage('Checkout') {
@@ -20,11 +11,21 @@ pipeline {
         
         stage('Setup Environment') {
             steps {
-                echo 'Setting up Python virtual environment...'
+                echo 'Setting up Python environment...'
                 sh '''
-                    python -m venv $VENV_DIR
-                    . $VENV_DIR/bin/activate
-                    python -m pip install --upgrade pip
+                    # Check for Python installation
+                    if command -v python3 &> /dev/null; then
+                        PYTHON_CMD=python3
+                    elif command -v python &> /dev/null; then
+                        PYTHON_CMD=python
+                    else
+                        echo "Python not found!"
+                        exit 1
+                    fi
+                    
+                    echo "Using Python: $PYTHON_CMD"
+                    $PYTHON_CMD --version
+                    $PYTHON_CMD -m pip install --upgrade pip --user
                 '''
             }
         }
@@ -33,8 +34,13 @@ pipeline {
             steps {
                 echo 'Installing required packages...'
                 sh '''
-                    . $VENV_DIR/bin/activate
-                    pip install -r requirements.txt
+                    if command -v python3 &> /dev/null; then
+                        PYTHON_CMD=python3
+                    else
+                        PYTHON_CMD=python
+                    fi
+                    
+                    $PYTHON_CMD -m pip install -r requirements.txt --user
                 '''
             }
         }
@@ -43,8 +49,13 @@ pipeline {
             steps {
                 echo 'Running unit tests...'
                 sh '''
-                    . $VENV_DIR/bin/activate
-                    pytest src/ --junitxml=test-results.xml || true
+                    if command -v python3 &> /dev/null; then
+                        PYTHON_CMD=python3
+                    else
+                        PYTHON_CMD=python
+                    fi
+                    
+                    $PYTHON_CMD -m pytest src/ --junitxml=test-results.xml || true
                 '''
             }
         }
@@ -53,8 +64,13 @@ pipeline {
             steps {
                 echo 'Training ML models...'
                 sh '''
-                    . $VENV_DIR/bin/activate
-                    python train.py
+                    if command -v python3 &> /dev/null; then
+                        PYTHON_CMD=python3
+                    else
+                        PYTHON_CMD=python
+                    fi
+                    
+                    $PYTHON_CMD train.py
                 '''
             }
         }
