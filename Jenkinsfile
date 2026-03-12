@@ -1,8 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.9'
+            args '-u root:root'
+        }
+    }
     
     environment {
-        PYTHON_VERSION = '3.9'
         VENV_DIR = 'venv'
     }
     
@@ -18,7 +22,7 @@ pipeline {
             steps {
                 echo 'Setting up Python virtual environment...'
                 sh '''
-                    python3 -m venv $VENV_DIR
+                    python -m venv $VENV_DIR
                     . $VENV_DIR/bin/activate
                     python -m pip install --upgrade pip
                 '''
